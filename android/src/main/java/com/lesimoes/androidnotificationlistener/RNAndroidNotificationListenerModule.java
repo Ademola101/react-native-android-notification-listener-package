@@ -1,8 +1,7 @@
 package com.lesimoes.androidnotificationlistener;
 
 import androidx.core.app.NotificationManagerCompat;
-// Changed import to use both RemoteInput classes with aliases to avoid conflict
-import android.app.RemoteInput as AndroidRemoteInput;
+// Import both RemoteInput classes with fully qualified names in the code
 import androidx.core.app.RemoteInput;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -118,7 +117,7 @@ public class RNAndroidNotificationListenerModule extends ReactContextBaseJavaMod
             
             // Find action with RemoteInput for reply
             Notification.Action replyAction = null;
-            AndroidRemoteInput androidRemoteInput = null;
+            android.app.RemoteInput androidRemoteInput = null;
             
             for (Notification.Action action : notification.actions) {
                 if (action.getRemoteInputs() != null && action.getRemoteInputs().length > 0) {
@@ -139,12 +138,12 @@ public class RNAndroidNotificationListenerModule extends ReactContextBaseJavaMod
             bundle.putCharSequence(androidRemoteInput.getResultKey(), replyText);
             
             // Convert Android's RemoteInput to AndroidX RemoteInput for compatibility
-            RemoteInput[] remoteInputs = new RemoteInput[]{
-                new RemoteInput.Builder(androidRemoteInput.getResultKey())
+            androidx.core.app.RemoteInput[] remoteInputs = new androidx.core.app.RemoteInput[]{
+                new androidx.core.app.RemoteInput.Builder(androidRemoteInput.getResultKey())
                     .build()
             };
             
-            RemoteInput.addResultsToIntent(remoteInputs, intent, bundle);
+            androidx.core.app.RemoteInput.addResultsToIntent(remoteInputs, intent, bundle);
             
             try {
                 replyAction.actionIntent.send(this.reactContext, 0, intent);
