@@ -5,11 +5,6 @@
     "description": "React Native Android Notification Listener - Listen for status bar notifications from all applications",
     "main": "index.js",
     "typings": "index.d.ts",
-    "scripts": {
-        "lint": "eslint . --ext .js,.jsx,.ts,.tsx && prettier . -c",
-        "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix && prettier -w .",
-        "prepare": "cd .. && husky install && cd package"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/leandrosimoes/react-native-android-notification-listener.git",
