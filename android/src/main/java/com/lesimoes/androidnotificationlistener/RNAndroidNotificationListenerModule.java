@@ -1,6 +1,8 @@
 package com.lesimoes.androidnotificationlistener;
 
 import androidx.core.app.NotificationManagerCompat;
+// Changed import to use both RemoteInput classes with aliases to avoid conflict
+import android.app.RemoteInput as AndroidRemoteInput;
 import androidx.core.app.RemoteInput;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -116,17 +118,17 @@ public class RNAndroidNotificationListenerModule extends ReactContextBaseJavaMod
             
             // Find action with RemoteInput for reply
             Notification.Action replyAction = null;
-            RemoteInput remoteInput = null;
+            AndroidRemoteInput androidRemoteInput = null;
             
             for (Notification.Action action : notification.actions) {
                 if (action.getRemoteInputs() != null && action.getRemoteInputs().length > 0) {
                     replyAction = action;
-                    remoteInput = action.getRemoteInputs()[0];
+                    androidRemoteInput = action.getRemoteInputs()[0];
                     break;
                 }
             }
             
-            if (replyAction == null || remoteInput == null) {
+            if (replyAction == null || androidRemoteInput == null) {
                 promise.reject("ERROR", "No reply action found in notification");
                 return;
             }
@@ -134,9 +136,15 @@ public class RNAndroidNotificationListenerModule extends ReactContextBaseJavaMod
             // Send the reply
             Intent intent = new Intent();
             Bundle bundle = new Bundle();
-            bundle.putCharSequence(remoteInput.getResultKey(), replyText);
+            bundle.putCharSequence(androidRemoteInput.getResultKey(), replyText);
             
-            RemoteInput.addResultsToIntent(new RemoteInput[]{remoteInput}, intent, bundle);
+            // Convert Android's RemoteInput to AndroidX RemoteInput for compatibility
+            RemoteInput[] remoteInputs = new RemoteInput[]{
+                new RemoteInput.Builder(androidRemoteInput.getResultKey())
+                    .build()
+            };
+            
+            RemoteInput.addResultsToIntent(remoteInputs, intent, bundle);
             
             try {
                 replyAction.actionIntent.send(this.reactContext, 0, intent);
