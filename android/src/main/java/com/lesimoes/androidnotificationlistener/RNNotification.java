@@ -35,10 +35,12 @@ public class RNNotification {
     protected String image;
     protected String time;
     protected String iconLarge;
-    // New fields for reply functionality
-    protected String key;
-    protected String packageName;
-    protected boolean canReply;
+    
+    // New fields for auto-reply functionality
+    protected boolean hasReplyAction;
+    protected String notificationKey;
+    protected String id;
+    protected String channelId;
     
     public RNNotification(Context context, StatusBarNotification sbn) {
         Notification notification = sbn.getNotification();
@@ -46,6 +48,7 @@ public class RNNotification {
         if (notification != null && notification.extras != null) {
             String packageName = sbn.getPackageName();
 
+            this.id = sbn.getId() + "";
             this.time = Long.toString(sbn.getPostTime());
             this.app = TextUtils.isEmpty(packageName) ? "Unknown App" : packageName;
             this.title = this.getPropertySafely(notification, Notification.EXTRA_TITLE);
@@ -61,11 +64,11 @@ public class RNNotification {
             this.icon = this.getNotificationIcon(context, notification);
             this.image = this.getNotificationImage(notification);
             this.groupedMessages = this.getGroupedNotifications(notification);
+            this.channelId = notification.getChannelId();
             
-            // Initialize the new fields
-            this.key = sbn.getKey();
-            this.packageName = sbn.getPackageName();
-            this.canReply = false; // This will be set by the listener service
+            // Initialize new fields for auto-reply functionality
+            this.hasReplyAction = false; // Will be set by the listener service
+            this.notificationKey = null; // Will be set by the listener service
         } else {
             Log.d(TAG, "The notification received has no data");
         }
@@ -189,5 +192,14 @@ public class RNNotification {
         }
 
         return inSampleSize;
+    }
+    
+    // Setters for auto-reply functionality
+    public void setHasReplyAction(boolean hasReplyAction) {
+        this.hasReplyAction = hasReplyAction;
+    }
+
+    public void setNotificationKey(String notificationKey) {
+        this.notificationKey = notificationKey;
     }
 }
